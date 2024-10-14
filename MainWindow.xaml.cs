@@ -26,6 +26,9 @@ namespace CustomVideoPlayer
 
         private bool isPlaying = false; // Starts the video not playing 
 
+        private DispatcherTimer durationTimer; // Timer for updating duration slider
+        private DispatcherTimer hideControlsTimer; // Timer for hiding the controls overlay
+
 
         public MainWindow()
         {
@@ -37,6 +40,16 @@ namespace CustomVideoPlayer
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(500); // Update every 500ms
             timer.Tick += Timer_Tick;
+
+            // Initialize the timer to hide controls
+            hideControlsTimer = new DispatcherTimer();
+            hideControlsTimer.Interval = TimeSpan.FromSeconds(3); // Hide after 3 seconds of inactivity
+            hideControlsTimer.Tick += HideControlsTimer_Tick;
+
+            // Start listening for mouse events to show/hide controls
+            mediaElement.MouseMove += MediaElement_MouseMove;
+            overlayPanel.MouseEnter += OverlayPanel_MouseEnter;
+            overlayPanel.MouseLeave += OverlayPanel_MouseLeave;
         }
 
         private void btnOpen_Click(Object sender, RoutedEventArgs e)
@@ -53,10 +66,7 @@ namespace CustomVideoPlayer
                 mediaElement.Source = new Uri(ofd.FileName);
                 mediaElement.Play();
                 timer.Start(); // Start updating the duration slider
-            }
-            else
-            {
-                MessageBox.Show("That file is not in the accessible formats!");
+                ShowControls(); // Show controls when a new video starts
             }
         }
         
@@ -144,8 +154,49 @@ namespace CustomVideoPlayer
             mediaElement.Play();
         }
 
-        
+        // Makes it so when the mouse hovers over the video, the duration slider appears
+        private void mediaElement_MouseEnter(object sender, MouseEventArgs e)
+        {
+            overlayPanel.Visibility = Visibility.Visible;
+        }
 
+        private void mediaElement_MouseLeave(object sender, MouseEventArgs e)
+        {
+            overlayPanel.Visibility = Visibility.Collapsed;
+        }
+
+
+        // Show controls when the mouse moves over the video
+        private void MediaElement_MouseMove(object sender, MouseEventArgs e)
+        {
+            ShowControls();
+            hideControlsTimer.Stop(); // Reset the hide timer
+            hideControlsTimer.Start(); // Start the hide timer again
+        }
+
+        // Ensure controls stay visible when interacting with them
+        private void OverlayPanel_MouseEnter(object sender, MouseEventArgs e)
+        {
+            hideControlsTimer.Stop(); // Stop the timer while hovering on the controls
+        }
+
+        private void OverlayPanel_MouseLeave(object sender, MouseEventArgs e)
+        {
+            hideControlsTimer.Start(); // Restart the timer when leaving the controls
+        }
+
+        // Hide the controls when the timer elapses
+        private void HideControlsTimer_Tick(object sender, EventArgs e)
+        {
+            overlayPanel.Visibility = Visibility.Collapsed;
+            hideControlsTimer.Stop(); // Stop the timer until the next interaction
+        }
+
+        // Helper to show the controls
+        private void ShowControls()
+        {
+            overlayPanel.Visibility = Visibility.Visible;
+        }
     }
 
 }

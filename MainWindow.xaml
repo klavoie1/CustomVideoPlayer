@@ -5,30 +5,40 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CustomVideoPlayer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1080" Width="1920" Background="Lightgray"
-        KeyDown="Window_KeyDown" FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}">
-    
-    
-    <Grid>
-        <MediaElement Name="mediaElement" LoadedBehavior="Manual" Stretch="Uniform" Margin="0,0,0,30" />
-        
-        
-        <DockPanel VerticalAlignment="Bottom" Height="30" Background="Gray">
-            
-            <Button Name="btnOpen" Content="Open" Width="60" Margin="5" Click="btnOpen_Click" />
-            <Button Name="btnPlay" Content="Play" Width="60" Margin="5" Click="btnPlay_Click" Background="LightGreen"/>
-            <Button Name="btnPause" Content="Pause" Width="60" Margin="5" Click="btnPause_Click" Background="LightSalmon"/>
-            <Button Name="bthFullScreen" Content="Fullscreen" Width="80" Margin="5" Click="btnFullscreen_Click"/>
-            
-            <Slider Name="volumeSlider" Minimum="0" Maximum="1" Value="0.3" TickFrequency="0.1" Width="100" Margin="5" 
-                    ValueChanged="volumeSlider_Click" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        Title="MainWindow" Height="600" Width="1000"
+        KeyDown="Window_KeyDown" FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"
+        Background="Black">
 
-            <Slider Name="durationSlider" Minimum="0" Margin="5"
+    <Grid>
+        <!-- MediaElement (Video Area) -->
+        <MediaElement Name="mediaElement" LoadedBehavior="Manual" Stretch="Uniform" />
+
+        <!-- Overlay Panel for Controls and Duration Slider -->
+        <Grid Name="overlayPanel" VerticalAlignment="Bottom" Background="#80000000" Height="70"
+              Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <!-- Slider -->
+                <RowDefinition Height="Auto" />
+                <!-- Controls -->
+            </Grid.RowDefinitions>
+
+            <!-- Duration Slider (Overlayed on Video) -->
+            <Slider Name="durationSlider" Grid.Row="0" Margin="5"
+                    Minimum="0"
                     PreviewMouseDown="durationSlider_PreviewMouseDown"
                     PreviewMouseUp="durationSlider_PreviewMouseUp"
                     ValueChanged="durationSlider_ValueChanged" />
-            
-        </DockPanel>
-        
+
+            <!-- Controls Panel -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                <Button Name="btnOpen" Content="Open" Width="80" Margin="5" Click="btnOpen_Click" />
+                <Button Name="btnPlay" Content="Play" Width="80" Margin="5" Click="btnPlay_Click" />
+                <Button Name="btnPause" Content="Pause" Width="80" Margin="5" Click="btnPause_Click" />
+                <Button Name="btnFullscreen" Content="Fullscreen" Width="100" Margin="5" Click="btnFullscreen_Click" />
+                <Slider Name="volumeSlider" Minimum="0" Maximum="1" Value="0.5" Width="100" Margin="5"
+                        ValueChanged="volumeSlider_Click" />
+            </StackPanel>
+        </Grid>
     </Grid>
-</Window>
+    </Window>
