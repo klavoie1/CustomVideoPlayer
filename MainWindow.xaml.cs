@@ -24,6 +24,9 @@ namespace CustomVideoPlayer
         private WindowStyle previousWindowStyle;
         private WindowState previousWindowState;
 
+        private bool isPlaying = false; // Starts the video not playing 
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -56,10 +59,7 @@ namespace CustomVideoPlayer
                 MessageBox.Show("That file is not in the accessible formats!");
             }
         }
-        private void btnPlay_Click(Object sender, RoutedEventArgs e)
-        {
-            mediaElement.Play();
-        }
+        
 
         private void btnPause_Click(Object sender, RoutedEventArgs e)
         {
@@ -138,6 +138,14 @@ namespace CustomVideoPlayer
                 ExitFullscreen();
             }
         }
+
+        private void btnPlay_Click(Object sender, RoutedEventArgs e)
+        {
+            mediaElement.Play();
+        }
+
+        
+
     }
 
 }
