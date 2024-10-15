@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.IO;
 
 namespace CustomVideoPlayer
 {
@@ -29,7 +30,6 @@ namespace CustomVideoPlayer
     public partial class MainWindow : Window
     {
 
-        private DispatcherTimer timer; // Timer to update the duration slider
         private bool isSeeking = false; // Track if user is interacting with the slider
         private bool isTimerUpdate = false; // Track if the slider update is from the timer
 
@@ -42,6 +42,7 @@ namespace CustomVideoPlayer
         private DispatcherTimer durationTimer; // Timer for updating duration slider
         private DispatcherTimer hideControlsTimer; // Timer for hiding the controls overlay
 
+        private DispatcherTimer durationLabelTimer;
 
 
         public MainWindow()
@@ -51,9 +52,9 @@ namespace CustomVideoPlayer
             mediaElement.Volume = volumeSlider.Value; // Sync initial volume
 
             // Initialize DispatcherTimer for updating the duration slider
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(500); // Update every 500ms
-            timer.Tick += Timer_Tick;
+            durationTimer = new DispatcherTimer();
+            durationTimer.Interval = TimeSpan.FromMilliseconds(500); // Update every 500ms
+            durationTimer.Tick += Timer_Tick;
 
             // Initialize the timer to hide controls
             hideControlsTimer = new DispatcherTimer();
@@ -64,6 +65,10 @@ namespace CustomVideoPlayer
             mediaElement.MouseMove += MediaElement_MouseMove;
             overlayPanel.MouseEnter += OverlayPanel_MouseEnter;
             overlayPanel.MouseLeave += OverlayPanel_MouseLeave;
+
+            durationLabelTimer = new DispatcherTimer();
+            durationLabelTimer.Interval = TimeSpan.FromSeconds(1);
+            durationLabelTimer.Tick += Timer_Tick;
         }
 
         private void btnOpen_Click(Object sender, RoutedEventArgs e)
@@ -79,7 +84,7 @@ namespace CustomVideoPlayer
             {
                 mediaElement.Source = new Uri(ofd.FileName);
                 mediaElement.Play();
-                timer.Start(); // Start updating the duration slider
+                durationTimer.Start(); // Start updating the duration slider
                 ShowControls(); // Show controls when a new video starts
             }
         }
@@ -89,6 +94,7 @@ namespace CustomVideoPlayer
         private void btnPause_Click(Object sender, RoutedEventArgs e)
         {
             mediaElement.Pause();
+            durationLabelTimer?.Stop();
         }
 
         private void volumeSlider_Click(Object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -100,21 +106,24 @@ namespace CustomVideoPlayer
         private void durationSlider_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             isSeeking = true; // Stop the timer updates while the user interacts with the slider
+            durationLabelTimer.Stop();
         }
 
         private void durationSlider_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             isSeeking = false; // Resume the timer updates
             mediaElement.Position = TimeSpan.FromSeconds(durationSlider.Value); // Seek to new position
+            durationLabelTimer.Start();
         }
 
         private void durationSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            // Prevent recursion: Only handle user-initiated value changes
-            if (!isSeeking && !isTimerUpdate && mediaElement.NaturalDuration.HasTimeSpan)
+            if (mediaElement.NaturalDuration.HasTimeSpan && durationSlider.IsMouseOver)
             {
                 mediaElement.Position = TimeSpan.FromSeconds(durationSlider.Value);
             }
+
+            
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -127,12 +136,28 @@ namespace CustomVideoPlayer
                 durationSlider.Value = mediaElement.Position.TotalSeconds;
                 isTimerUpdate = false;
             }
+
+            if (mediaElement.NaturalDuration.HasTimeSpan)
+            {
+                // Update the elapsed time
+                TimeSpan currentTime = mediaElement.Position;
+                elapsedTime.Text = FormatTime(currentTime);
+
+                // Update the remaining time
+                TimeSpan remaining = mediaElement.NaturalDuration.TimeSpan - currentTime;
+                remainingTime.Text = $"-{FormatTime(remaining)}";
+
+                // Update the slider value based on the current position
+                durationSlider.Value = currentTime.TotalSeconds;
+                durationSlider.Maximum = mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            }
         }
 
-        //private void btnFullscreen_Click(object sender, RoutedEventArgs e)
-        //{
-        //    EnterFullscreen();
-        //}
+        // Helper method to format the time (hh:mm:ss)
+        private string FormatTime(TimeSpan time)
+        {
+            return time.ToString(time.Hours > 0 ? @"hh\:mm\:ss" : @"mm\:ss");
+        }
 
         private void btnFullscreen_Click(object sender, RoutedEventArgs e)
         {
@@ -179,6 +204,7 @@ namespace CustomVideoPlayer
         private void btnPlay_Click(Object sender, RoutedEventArgs e)
         {
             mediaElement.Play();
+            durationLabelTimer.Start();
         }
 
 
@@ -213,6 +239,21 @@ namespace CustomVideoPlayer
         {
             overlayPanel.Visibility = Visibility.Visible;
         }
+
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

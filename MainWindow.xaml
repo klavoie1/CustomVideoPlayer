@@ -26,12 +26,21 @@
                 <!-- Controls -->
             </Grid.RowDefinitions>
 
-            <!-- Duration Slider (Overlayed on Video) -->
-            <Slider Name="durationSlider" Grid.Row="0" Margin="5"
-                    Minimum="0"
-                    PreviewMouseDown="durationSlider_PreviewMouseDown"
-                    PreviewMouseUp="durationSlider_PreviewMouseUp"
-                    ValueChanged="durationSlider_ValueChanged" />
+            <!-- Duration Slider with Time Labels -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="7">
+                <!-- Elapsed Time -->
+                <TextBlock Name="elapsedTime" Text="00:00" Foreground="White" Width="50" VerticalAlignment="Center" />
+
+                <!-- Slider for Duration -->
+                <Slider Name="durationSlider" Width="800" Margin="5,0" 
+                        Minimum="0" Maximum="100" Value="0"
+                        PreviewMouseDown="durationSlider_PreviewMouseDown"
+                        PreviewMouseUp="durationSlider_PreviewMouseUp"
+                        ValueChanged="durationSlider_ValueChanged" />
+
+                <!-- Remaining Time -->
+                <TextBlock Name="remainingTime" Text="-00:00" Foreground="White" Width="50" VerticalAlignment="Center" />
+            </StackPanel>
 
             <!-- Controls Panel -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
