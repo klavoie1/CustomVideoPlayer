@@ -13,6 +13,19 @@ using System.Windows.Threading;
 
 namespace CustomVideoPlayer
 {
+
+    public static class MediaElementExtensions
+    {
+        // This helper method checks if the media is currently playing
+        public static bool IsPlaying(this MediaElement mediaElement)
+        {
+            // We assume media is playing if its Position is advancing and it's not paused.
+            return mediaElement.Clock != null || mediaElement.LoadedBehavior == MediaState.Play;
+        }
+    }
+
+
+
     public partial class MainWindow : Window
     {
 
@@ -30,6 +43,7 @@ namespace CustomVideoPlayer
         private DispatcherTimer hideControlsTimer; // Timer for hiding the controls overlay
 
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -43,7 +57,7 @@ namespace CustomVideoPlayer
 
             // Initialize the timer to hide controls
             hideControlsTimer = new DispatcherTimer();
-            hideControlsTimer.Interval = TimeSpan.FromSeconds(3); // Hide after 3 seconds of inactivity
+            hideControlsTimer.Interval = TimeSpan.FromSeconds(1); // Hide after 1 seconds of inactivity
             hideControlsTimer.Tick += HideControlsTimer_Tick;
 
             // Start listening for mouse events to show/hide controls
@@ -69,7 +83,8 @@ namespace CustomVideoPlayer
                 ShowControls(); // Show controls when a new video starts
             }
         }
-        
+
+
 
         private void btnPause_Click(Object sender, RoutedEventArgs e)
         {
@@ -114,9 +129,21 @@ namespace CustomVideoPlayer
             }
         }
 
+        //private void btnFullscreen_Click(object sender, RoutedEventArgs e)
+        //{
+        //    EnterFullscreen();
+        //}
+
         private void btnFullscreen_Click(object sender, RoutedEventArgs e)
         {
-            EnterFullscreen();
+            if (isFullscreen == true)
+            {
+                ExitFullscreen();
+            }
+            else
+            {
+                EnterFullscreen();
+            }
         }
 
         private void EnterFullscreen()
@@ -154,17 +181,6 @@ namespace CustomVideoPlayer
             mediaElement.Play();
         }
 
-        // Makes it so when the mouse hovers over the video, the duration slider appears
-        private void mediaElement_MouseEnter(object sender, MouseEventArgs e)
-        {
-            overlayPanel.Visibility = Visibility.Visible;
-        }
-
-        private void mediaElement_MouseLeave(object sender, MouseEventArgs e)
-        {
-            overlayPanel.Visibility = Visibility.Collapsed;
-        }
-
 
         // Show controls when the mouse moves over the video
         private void MediaElement_MouseMove(object sender, MouseEventArgs e)
@@ -197,6 +213,6 @@ namespace CustomVideoPlayer
         {
             overlayPanel.Visibility = Visibility.Visible;
         }
-    }
 
+    }
 }

@@ -7,7 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1000"
         KeyDown="Window_KeyDown" FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"
-        Background="Black">
+        Background="Black"
+        >
+    
+
 
     <Grid>
         <!-- MediaElement (Video Area) -->
@@ -35,7 +38,9 @@
                 <Button Name="btnOpen" Content="Open" Width="80" Margin="5" Click="btnOpen_Click" />
                 <Button Name="btnPlay" Content="Play" Width="80" Margin="5" Click="btnPlay_Click" />
                 <Button Name="btnPause" Content="Pause" Width="80" Margin="5" Click="btnPause_Click" />
+                
                 <Button Name="btnFullscreen" Content="Fullscreen" Width="100" Margin="5" Click="btnFullscreen_Click" />
+
                 <Slider Name="volumeSlider" Minimum="0" Maximum="1" Value="0.5" Width="100" Margin="5"
                         ValueChanged="volumeSlider_Click" />
             </StackPanel>
