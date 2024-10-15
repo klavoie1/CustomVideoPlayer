@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:CustomVideoPlayer"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1000"
-        KeyDown="Window_KeyDown" FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"
+        KeyDown="Window_KeyDown"
+        
         Background="Black"
         >
     
@@ -14,11 +15,11 @@
 
     <Grid>
         <!-- MediaElement (Video Area) -->
-        <MediaElement Name="mediaElement" LoadedBehavior="Manual" Stretch="Uniform" />
+        <MediaElement Name="mediaElement" LoadedBehavior="Manual" Stretch="Uniform" Focusable="False"/>
 
         <!-- Overlay Panel for Controls and Duration Slider -->
         <Grid Name="overlayPanel" VerticalAlignment="Bottom" Background="#80000000" Height="70"
-              Visibility="Visible">
+              Visibility="Visible" Focusable="False">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <!-- Slider -->
@@ -36,7 +37,8 @@
                         Minimum="0" Maximum="100" Value="0"
                         PreviewMouseDown="durationSlider_PreviewMouseDown"
                         PreviewMouseUp="durationSlider_PreviewMouseUp"
-                        ValueChanged="durationSlider_ValueChanged" />
+                        ValueChanged="durationSlider_ValueChanged" 
+                        Focusable="False"/>
 
                 <!-- Remaining Time -->
                 <TextBlock Name="remainingTime" Text="-00:00" Foreground="White" Width="50" VerticalAlignment="Center" />
@@ -44,14 +46,14 @@
 
             <!-- Controls Panel -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                <Button Name="btnOpen" Content="Open" Width="80" Margin="5" Click="btnOpen_Click" />
-                <Button Name="btnPlay" Content="Play" Width="80" Margin="5" Click="btnPlay_Click" />
-                <Button Name="btnPause" Content="Pause" Width="80" Margin="5" Click="btnPause_Click" />
+                <Button Name="btnOpen" Content="Open" Width="80" Margin="5" Click="btnOpen_Click" Focusable="False" />
+                <Button Name="btnPlay" Content="Play" Width="80" Margin="5" Click="btnPlay_Click" Focusable="False"/>
+                <Button Name="btnPause" Content="Pause" Width="80" Margin="5" Click="btnPause_Click" Focusable="False"/>
                 
-                <Button Name="btnFullscreen" Content="Fullscreen" Width="100" Margin="5" Click="btnFullscreen_Click" />
+                <Button Name="btnFullscreen" Content="Fullscreen" Width="100" Margin="5" Click="btnFullscreen_Click" Focusable="False" />
 
                 <Slider Name="volumeSlider" Minimum="0" Maximum="1" Value="0.5" Width="100" Margin="5"
-                        ValueChanged="volumeSlider_Click" />
+                        ValueChanged="volumeSlider_Click" Focusable="False"/>
             </StackPanel>
         </Grid>
     </Grid>

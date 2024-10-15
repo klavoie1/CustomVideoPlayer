@@ -17,13 +17,13 @@ namespace CustomVideoPlayer
 
     public static class MediaElementExtensions
     {
-        // This helper method checks if the media is currently playing
         public static bool IsPlaying(this MediaElement mediaElement)
         {
-            // We assume media is playing if its Position is advancing and it's not paused.
-            return mediaElement.Clock != null || mediaElement.LoadedBehavior == MediaState.Play;
+            return mediaElement.LoadedBehavior == MediaState.Play;
         }
     }
+
+    
 
 
 
@@ -67,7 +67,7 @@ namespace CustomVideoPlayer
             overlayPanel.MouseLeave += OverlayPanel_MouseLeave;
 
             durationLabelTimer = new DispatcherTimer();
-            durationLabelTimer.Interval = TimeSpan.FromSeconds(1);
+            durationLabelTimer.Interval = TimeSpan.FromSeconds(2);
             durationLabelTimer.Tick += Timer_Tick;
         }
 
@@ -193,14 +193,6 @@ namespace CustomVideoPlayer
             }
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape && isFullscreen)
-            {
-                ExitFullscreen();
-            }
-        }
-
         private void btnPlay_Click(Object sender, RoutedEventArgs e)
         {
             mediaElement.Play();
@@ -240,8 +232,130 @@ namespace CustomVideoPlayer
             overlayPanel.Visibility = Visibility.Visible;
         }
 
-        
-        
+
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Space:
+                    // Toggle Play/Pause
+                    TogglePlayPause();
+                    e.Handled = true; // Prevent further processing
+                    break;
+
+                case Key.S:
+                    // Stop the video
+                    StopVideo();
+                    e.Handled = true;
+                    break;
+
+                case Key.F:
+                    // Toggle Fullscreen
+                    ToggleFullscreen();
+                    e.Handled = true;
+                    break;
+
+                case Key.Left:
+                    // Rewind 10 seconds
+                    RewindVideo();
+                    e.Handled = true;
+                    break;
+
+                case Key.Right:
+                    // Fast Forward 10 seconds
+                    FastForwardVideo();
+                    e.Handled = true;
+                    break;
+
+                case Key.Escape:
+                    // Exits Fullscreen
+                    ExitFullscreen();
+                    e.Handled = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private bool IsMediaEnded()
+        {
+            // Check if the media has ended
+            return mediaElement.Position >= mediaElement.NaturalDuration.TimeSpan;
+        }
+
+        private void StopVideo()
+        {
+            mediaElement.Stop();
+            durationLabelTimer.Stop(); // Stop the timer if video is stopped
+        }
+
+        private void TogglePlayPause()
+        {
+            // Check if the video has ended and reset if necessary
+            if (IsMediaEnded())
+            {
+                mediaElement.Position = TimeSpan.Zero; // Reset to the beginning if the video has ended
+            }
+
+            // If the media element is currently playing, pause it
+            if (mediaElement.CanPause && mediaElement.LoadedBehavior == MediaState.Play)
+            {
+                mediaElement.Pause(); // Pause the video
+            }
+            else
+            {
+                mediaElement.Play(); // Play the video if it is not currently playing
+            }
+        }
+
+
+
+
+
+
+        private void ToggleFullscreen()
+        {
+            if (WindowState == WindowState.Normal)
+            {
+                WindowState = WindowState.Maximized;
+                this.WindowStyle = WindowStyle.None; // Optional: Hide window borders
+            }
+            else
+            {
+                WindowState = WindowState.Normal;
+                this.WindowStyle = WindowStyle.SingleBorderWindow; // Restore borders
+            }
+        }
+
+        private void RewindVideo()
+        {
+            if (mediaElement.Position.TotalSeconds > 10)
+            {
+                mediaElement.Position -= TimeSpan.FromSeconds(10);
+            }
+            else
+            {
+                mediaElement.Position = TimeSpan.Zero; // Go to start if less than 10 seconds
+            }
+        }
+
+        private void FastForwardVideo()
+        {
+            if (mediaElement.NaturalDuration.HasTimeSpan)
+            {
+                double newTime = mediaElement.Position.TotalSeconds + 10;
+                if (newTime < mediaElement.NaturalDuration.TimeSpan.TotalSeconds)
+                {
+                    mediaElement.Position = TimeSpan.FromSeconds(newTime);
+                }
+                else
+                {
+                    mediaElement.Position = mediaElement.NaturalDuration.TimeSpan; // Go to end
+                }
+            }
+        }
 
 
 
