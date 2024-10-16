@@ -7,15 +7,28 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1000"
         KeyDown="Window_KeyDown"
-        
-        Background="Black"
-        >
+        Background="Black">
     
 
 
     <Grid>
+        <!-- Top Menu area -->
+        <Menu VerticalAlignment="Top" Background="#444" Foreground="white"
+                FontSize="14" FontFamily="Verdana" Padding="5">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="OpenFile_Click" />
+                <Separator />
+                <MenuItem Header="E_xit" Click="Exit_Click" />
+            </MenuItem>
+        
+
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Click="About_Click" />
+            </MenuItem>
+        </Menu>
+        
         <!-- MediaElement (Video Area) -->
-        <MediaElement Name="mediaElement" LoadedBehavior="Manual" Stretch="Uniform" Focusable="False"/>
+        <MediaElement Name="mediaElement" LoadedBehavior="Manual" Stretch="Uniform" Focusable="False" Margin="0,29,0,0"/>
 
         <!-- Overlay Panel for Controls and Duration Slider -->
         <Grid Name="overlayPanel" VerticalAlignment="Bottom" Background="#80000000" Height="70"
@@ -58,3 +71,5 @@
         </Grid>
     </Grid>
     </Window>
+    
+    

@@ -50,6 +50,7 @@ namespace CustomVideoPlayer
             InitializeComponent();
             volumeSlider.Value = 0.3; // Set default volume to 30%
             mediaElement.Volume = volumeSlider.Value; // Sync initial volume
+            volumeSlider.Value = mediaElement.Volume;
 
             // Initialize DispatcherTimer for updating the duration slider
             durationTimer = new DispatcherTimer();
@@ -184,7 +185,7 @@ namespace CustomVideoPlayer
 
         private void ExitFullscreen()
         {
-            if (isFullscreen)
+            if (!isFullscreen)
             {
                 // Restore the window to normal state
                 WindowStyle = WindowStyle.SingleBorderWindow;
@@ -274,6 +275,18 @@ namespace CustomVideoPlayer
                     e.Handled = true;
                     break;
 
+                case Key.Up:
+                    // Raised Volume 0.1
+                    IncreaseVolume();
+                    e.Handled = true;
+                    break;
+
+                case Key.Down:
+                    //Lower Volume 0.1
+                    DecreaseVolume();
+                    e.Handled = true;
+                    break;
+
                 default:
                     break;
             }
@@ -310,8 +323,25 @@ namespace CustomVideoPlayer
             }
         }
 
+        private void IncreaseVolume()
+        {
+            if (mediaElement.Volume < 1)
+            {
+                mediaElement.Volume = Math.Min(mediaElement.Volume + 0.1, 1.0); // Max Volume is 1
+                volumeSlider.Value = mediaElement.Volume;
+                Console.WriteLine($"Volume: {mediaElement.Volume * 100}%");
+            }
+        }
 
-
+        private void DecreaseVolume()
+        {
+            if (mediaElement.Volume > 0.0)
+            {
+                mediaElement.Volume = Math.Max(mediaElement.Volume - 0.1, 0.0); //Min Volume is 0
+                volumeSlider.Value = mediaElement.Volume;
+                Console.WriteLine($"Volume: {mediaElement.Volume * 100}%");
+            }
+        }
 
 
 
@@ -360,6 +390,31 @@ namespace CustomVideoPlayer
 
 
 
+
+
+        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Media Files|*.mp4;*.avi;*.mkv;*.mov"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                mediaElement.Source = new Uri(openFileDialog.FileName);
+                mediaElement.Play();
+            }
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown(); // Close the application
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("WPF Video Player v1.0\nCreated by You", "About");
+        }
 
 
 
